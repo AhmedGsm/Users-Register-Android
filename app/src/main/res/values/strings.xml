@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Personal</string>
+    <string name="nameEdit">Name</string>
+    <string name="emailEdit">Email</string>
+    <string name="passwordEdit">Password</string>
+    <string name="ageEdit">Age</string>
+    <string name="occupationEdit">Occupation</string>
+    <string name="registerBtn">Register</string>
+    <string name="registeringStr">Registering...</string>
+    <string name="errorRegisteringStr">Error occured when registering</string>
+    <string name="successRegisteringStr">Registration done successfully</string>
+
 </resources>
