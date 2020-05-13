@@ -3,9 +3,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -13,14 +22,12 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class RegistrationFragment extends Fragment {
-
     @BindView(R.id.registerBtn)Button registerButton;
     @BindView(R.id.nameEditText) EditText nameEdit;
     @BindView(R.id.emailEditText) EditText emailEdit;
     @BindView(R.id.passwordEditText) EditText passwordEdit;
     @BindView(R.id.ageEditText) EditText ageEdit;
     @BindView(R.id.occupationEditText) EditText occupationEdit;
-
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -68,6 +75,55 @@ public class RegistrationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-    }
 
+        // Bind Butterknife to fragment
+        ButterKnife.bind(this,view);
+        // Use Retrofit to register a user
+        final RegistrationInterface retrofit =
+                RetrofitClient.buildRetrofit().create(RegistrationInterface.class);
+
+        // Insert person informations to remote database when click register button
+        registerButton.setOnClickListener(view1 -> {
+            // Disable button when clicking
+            registerButton.setEnabled(false);
+            registerButton.setText(R.string.registeringStr);
+            // Read values from edit texts
+            final String name = nameEdit.getText().toString();
+            final String email = emailEdit.getText().toString();
+            final String password = passwordEdit.getText().toString();
+            final String age = ageEdit.getText().toString();
+            final String occupation = occupationEdit.getText().toString();
+            Call<Person> call = retrofit.insertPerson(name,email,password,age,occupation);
+            call.enqueue(new Callback<Person>() {
+                private String TAG = RegistrationFragment.class.getSimpleName();
+                @Override
+                public void onResponse(Call<Person> call, Response<Person> response) {
+                    // On registering success clear all edit text, and enable register button
+                    registerButton.setEnabled(true);
+                    registerButton.setText(R.string.registerBtn);
+                    nameEdit.setText("");
+                    ageEdit.setText("");
+                    emailEdit.setText("");
+                    occupationEdit.setText("");
+                    passwordEdit.setText("");
+                    // Log the response message
+                    Log.w(TAG ,"response,errorBody "  + response.errorBody());
+                    assert response.body() != null;
+                    Log.w(TAG ,"response,getMassage"  + response.body().getMassage());
+                    // Display the registration state for user in a message Toast
+                    if(response.body().getValue().equals("0") ) {
+                        Toast.makeText(getContext(),R.string.errorRegisteringStr, Toast.LENGTH_LONG).show();
+                    } else if(response.body().getValue().equals("1")) {
+                        Toast.makeText(getContext(), R.string.successRegisteringStr, Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Person> call, Throwable t) {
+                    Log.w(TAG ,"response onFailure "  + t.getMessage());
+                }
+            });
+
+        });
+    }
 }
