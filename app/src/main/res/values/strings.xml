@@ -14,5 +14,8 @@
     <string name="personEmailStr">Email: %s</string>
     <string name="errorReadData">Error read data from server</string>
     <string name="noUserRegistered">No user registered</string>
+    <string name="registerStr">Register</string>
+    <string name="UsersStr">Users</string>
+
 
 </resources>

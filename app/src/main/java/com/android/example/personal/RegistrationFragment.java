@@ -123,7 +123,6 @@ public class RegistrationFragment extends Fragment {
                     Log.w(TAG ,"response onFailure "  + t.getMessage());
                 }
             });
-
         });
     }
 }
