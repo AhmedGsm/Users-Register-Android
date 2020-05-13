@@ -1,5 +1,7 @@
 package com.android.example.personal;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -16,4 +18,7 @@ public interface RegistrationInterface {
             @Field("age")String age,
             @Field("occupation")String occupation
     );
+
+    @POST("read.php")
+    Call<List<Person>> getPersons();
 }

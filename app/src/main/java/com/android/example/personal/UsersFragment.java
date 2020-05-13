@@ -9,10 +9,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -38,6 +42,7 @@ public class UsersFragment extends Fragment {
     private String mParam2;
 
     private PersonAdapter mAdapter;
+    private static final String TAG = UsersFragment.class.getSimpleName() ;
 
     public UsersFragment() {
         // Required empty public constructor
@@ -80,7 +85,7 @@ public class UsersFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Bind Butterknife to fragment
+        // Bind Butter knife to fragment
         ButterKnife.bind(this,view);
 
         // Setup recycler view
@@ -88,5 +93,37 @@ public class UsersFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
         mAdapter = new PersonAdapter(getContext());
         mRecyclerView.setAdapter(mAdapter);
+
+        // Use Retrofit to register a user
+        final RegistrationInterface retrofit =
+                RetrofitClient.buildRetrofit().create(RegistrationInterface.class);
+        Call<List<Person>> call = retrofit.getPersons();
+        call.enqueue(new Callback<List<Person>>() {
+
+            @Override
+            public void onResponse(Call<List<Person>> call, Response<List<Person>> response) {
+                // Logging response message
+                Log.i(TAG, response.message());
+                if(response.body() == null ) {
+                    Toast.makeText(getContext(),R.string.errorReadData,Toast.LENGTH_SHORT).show();
+                   return;
+                }
+                // If no user registered
+                if(response.body().get(0).getMassage() != null) {
+                    Toast.makeText(getContext(),R.string.noUserRegistered,Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // Populate users ids & emails in recycler view..
+                mAdapter.swapPersons(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<Person>> call, Throwable t) {
+                // Logging error message
+                if(t == null)return;
+                Log.e(TAG, t.getMessage());
+                Toast.makeText(getContext(),R.string.errorReadData,Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
