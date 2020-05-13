@@ -10,4 +10,7 @@
     <string name="errorRegisteringStr">Error occured when registering</string>
     <string name="successRegisteringStr">Registration done successfully</string>
 
+    <string name="personIdStr">Id: %s</string>
+    <string name="personEmailStr">Email: %s</string>
+
 </resources>
