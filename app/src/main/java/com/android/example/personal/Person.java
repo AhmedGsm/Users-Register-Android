@@ -17,6 +17,27 @@ public class Person {
     String occupation;
     @SerializedName("time")
     String time;
+    @SerializedName("value")
+    private String value;
+    @SerializedName("message")
+    private String massage;
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public void setMassage(String massage) {
+        this.massage = massage;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getMassage() {
+        return massage;
+    }
+
 
     public void setId(int id) {
         this.id = id;
